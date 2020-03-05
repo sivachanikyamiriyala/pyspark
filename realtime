@@ -26,39 +26,37 @@ def hdfs():
 print("------------SUCCESSFUL HDFS------------------")	
 	
 def rdbms():
-	
-	
-	print("------------creation of sparkdriver for rdbms ---------------")
-	sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
-	print("-----------sparkdriver creation successful ----------------------")
-	
-	print("-------------creation of data frame-----------------")
-	df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','kalyan.orders').load()
-	print("---------------creation of data frame successful -----------")
-	
-	
-	print(" --------------write the data into rdbms ------------------")
-	df_jdbc.write.format('jdbc').partitionBy("order_status").option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','kalyan.sssss').save()
-	print("---------------writing the data into rdbms successful ----------------- ")
+		print("------------creation of sparkdriver for rdbms ---------------")
+		sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
+		print("-----------sparkdriver creation successful ----------------------")
+		
+		print("-------------creation of data frame-----------------")
+		df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','kalyan.orders').load()
+		print("---------------creation of data frame successful -----------")
+		
+		
+		print(" --------------write the data into rdbms ------------------")
+		df_jdbc.write.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','kalyan.sssss').save()
+		print("---------------writing the data into rdbms successful ----------------- ")
+
+
 print("-------------------SUCCESSFUL RDBMS-------------------")
 	
 
-def local()
-
+def local():
 	print("-------creation of sparkdriver ----------------")
 	sparkdriver=SparkSession.builder.master('local').appName('demo3').getOrCreate()
 	print(" ------creation of spark driver successful -------------")
-	
 	print("---------------creation of data frame -----------------")
 	df_local=sparkdriver.read.format('csv').option('header',True).option('delimiter','\t').load('/home/spark/wednesday/csv_op_2')
 	print("----------write the data into rdbms---------------")
 	df_local.groupBy("order_date").count().write.format('csv').option('delimiter','\t').option('header',True).save('/home/spark/wednesday/csv_op_3')
 
+
 print("--------------SUCCESSFUL LOCAL---------")	
 	
 	
 def hiveTable():
-	
 	print("---------------creation of sparkdriver for hive -------")
 	sparkdriver=SparkSession.builder.master('local').enableHiveSupport().appName('demo4').getOrCreate()
 	print("----------------creation of sparkdriver successful------------")
@@ -68,9 +66,11 @@ def hiveTable():
 	print(" ------------hive data frame creation successful ------------")
 	
 	print("-------write the data into hive table ------------")
-	df_hive.partitionBy("order_status").count().write.saveAsTable("kalyan.hive1")
-	df_hive.bucketBy(100,"order_id").write.saveAsTable("kalyan.hive2")
+	df_hive.write.saveAsTable("kalyan.hive1")
+	#df_hive.bucketBy(100,"order_id").write.saveAsTable("kalyan.hive2")
 	print("--------writing the data into hive table successful -----------")
+	
+
 	
 print("-----HIVE SUCCESSFUL----------")
 
@@ -78,9 +78,10 @@ print("-----HIVE SUCCESSFUL----------")
 
 if __name__=="__main__":
 		hdfs()
-		hive()
+		rdbms()
 		local()
 		hiveTable()
 		
+	
 	
 

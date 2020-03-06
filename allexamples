@@ -1,0 +1,218 @@
+import os
+import json
+import time
+import requests 
+import logging
+
+from pyspark.sql import SparkSession,HiveContext
+from pyspark.sql import *
+from pyspark.sql import functions as  f 
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+def hdfs():
+	print("---creation of sparkdriver----")
+	sparkdriver=SparkSession.builder.master('local').appName('demo').getOrCreate()
+	print("---creationof data frame ----")
+	df_hdfs=sparkdriver.read.format('parquet').option('delimiter','\t').option('header',True).load('hdfs://localhost:8020/hive/kalyan/hive1')
+	df_hdfs.printSchema()
+	df_hdfs.count()
+	df_hdfs.show(10)
+	df_hdfs.write.format('csv').option('header',True).option('delimiter','\t').save('hdfs://localhost:8020/hive/kalyan/csv_op_1')
+
+
+print("---hdfs done---")
+
+if __name__ == "__main__":
+	hdfs()
+
+	
+print("hdfs calling done successfull---")
+
+def rdbms():
+	print("------creation of sparkdriver ----")
+	sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
+	print("creation of data frame from mysql db ---")
+	df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+	print("data frmae created successful---")
+	df_jdbc.show(2)
+	df_jdbc.printSchema()
+	print("----write the data into rdbms---")
+	df_jdbc.write.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','sqoop.orders9').save()
+	print("-----writing the data into sqoop database ---")
+
+
+
+if __name__=="__main__":
+	rdbms()
+
+
+		
+def local():
+	print("creation of sparkdriver for local ----")
+	sparkdriver=SparkSession.builder.master('local').appName('demo3').getOrCreate()
+	print("----creation of data frame from local sysytm---")
+	df_local=sparkdriver.read.format('csv').option('delimiter','\t').option('header',True).load('/home/spark/wednesday/csv_op_2')
+	df_local.show(10)
+	df_local.printSchema()
+	df_local.write.format('parquet').mode('overwrite').save('/home/spark/wednesday/parquet_op')
+
+
+if __name__=="__main__":
+	local()
+
+
+def hiveTable():
+	print("---creation sparkdriver -----")
+	sparkdriver=SparkSession.builder.master('local').enableHiveSupport().appName('demo4').getOrCreate()
+	print("----creation of data frame from hive table----")
+	df_hive=sparkdriver.sql("select * from kalyan.rtrt")
+	df_hive.show(10)
+	df_hive.printSchema()
+	df_hive.columns
+	print("------write ing the data into hive table ---")
+	df_hive.write.format('parquet').saveAsTable('kalyan.sisiva')
+
+
+if __name__=="__main__":
+	hiveTable()
+
+
+-----------------------------**********************************----------------------------------------
+import os
+import json
+import time
+import requests 
+import logging
+
+from pyspark.sql import SparkSession,HiveContext
+from pyspark.sql import *
+from pyspark.sql import functions as  f 
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+
+sparkdriver=SparkSession.builder.master('local').enableHiveSupport.appName('demo5').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').getOrCreate()
+
+df_rdbms=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+df_rdbms.show(10)
+df_rdbms.columns
+df_rdbms.count()
+df_rdbms.take(2)
+#donot use collect in real time we may face memory issues
+#df_rdbms.collect()
+df_rdbms.createOrReplaceTempView("student")
+
+sparkdriver.sql("show tables").show()
+sparkdriver.catalog.listTables()
+sparkdriver.sql("show tables").collect()
+
+sparkdriver.sql("select * from student").show()
+df_rdbms.show()
+
+sparkdriver.sql("select order_id,order_date from student ").show()
+df_rdbms.select("order_id","order_date").show()
+df_rdbms.select(df_rdbms.order_id,df_rdbms.order_date).show(10)
+
+sparkdriver.sql("select order_id,order_date from student where order_id>1000 and order_id<1010").show()
+df_rdbms.select("order_id","order_date").where("order_id>1000").filter("order_id<1010").show() 
+
+sparkdriver.sql("select order_status,count(1) from student group by order_status").show()
+df_rdbms.groupBy("order_status").count().show()
+df_rdbms.groupBy(df_rdbms.order_status).count().show()
+
+sparkdriver.sql("select substr(order_status,1,1) as ch,count() from student group by ch").show()
+df_rdbms.groupBy(df_rdbms.substr(1,1)).count().show()
+
+sparkdriver.sql("select order_status,count(),min(order_id),max(order_id) from student group by order_status").show()
+df_rdbms.groupBy(df_rdbms.order_status).agg(f.count(df_rdbms.order_status),f.min(df_rdbms.order_id),f.max(df_rdbms.order_id)).show()
+
+
+df=df_rdbms.alias("df")
+df.show()
+df_rdbms.show()
+
+df.printSchema()
+df_rdbms.printSchema()
+
+df.count()
+df_rdbms.count()
+
+df.createOrReplaceTempView("sample1")
+df.createGlobalTempView("sample2")
+
+sparkdriver.sql("select * from sample1").show()
+sparkdriver.sql("select * from global_temp.sample2").show()
+
+spark=sparkdriver.newSession()
+
+spark.sql("select * from global_temp.sample2").show()
+
+df1=df.where("order_id%2==0")
+df2=df.where("order_id%2==1")
+df1.count()
+df2.count()
+df.count()
+
+df1.printSchema()
+df2.printSchema()
+
+------Joins------------
+df1.join(df2,df1.order_status==df2.order_status,'inner').count()
+
+
+df6=df1.limit(10)
+
+df6.printSchema()
+df9=df2.limit(10)
+
+df6.join(df9,df6.order_status==df9.order_status,'inner').show()
+df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'inner').count()
+df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'inner').show()
+df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'left_outer').show()
+
+df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'right_outer').count()
+df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'full_outer').count()
+	
+df6.orderBy("order_id").show()
+df6.orderBy(desc("order_id").show()
+df6.orderBy(asc("order_id").show()  
+
+df6.cube(df6.order_id,df6.order_status).count().show()
+df6.rollup(df6.order_id,df6.order_status).count().show() 
+
+df6.show()
+df6.selectExpr("order_id+1 as myid").show()
+
+df6.show()
+
+df6.withColumn("sivaid"df6.order_id+1).show()
+df6.withColumn("zone",f.when(df6.order_status=="COMPLETE","OK").when(df6.order_status=="PROCESSING","WAIT").otherwise("fail")).show()
+
+df6.withColumnRenamed("order_id","idd")
+
+df6.cube(df6.order_id,df6.order_status).count().na.replace("COMPLETE",None).show()	
+df6.cube(df6.order_id,df6.order_status).count().na.replace("COMPLETE","ok",'order_status').show()	
+	
+df6.drop("order_status").show()
+df6.drop("order_id","order_date").show()
+
+df6.dropDuplicates(['order_status']).show()
+
+df6.exceptAll(df9).show()
+
+sparkdriver.catalog.listFunctions.count()
+sparkdriver.catalog.listDatabases().collect()
+
+sparkdriver.sql("show databases").show()
+
+df_rdbms.select("order_id","order_date").where("order_id>1000").filter("order_id<1010").explain(True) 
+
+df_rdbms.select("order_id","order_date").where("order_id>1000").filter("order_id<1010").explain() 
+
+
+
+df_rdbms.cache()
+df_rdbms.unpersist()
+df_rdbms.persist()
+	

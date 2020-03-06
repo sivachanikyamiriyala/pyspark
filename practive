@@ -1,0 +1,1843 @@
+spark@hadoop:~$ pyspark
+Python 2.7.12 (default, Oct  8 2019, 14:14:10) 
+[GCC 5.4.0 20160609] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+20/03/06 15:00:23 WARN Utils: Your hostname, hadoop resolves to a loopback address: 127.0.0.1; using 192.168.0.165 instead (on interface wlp8s0)
+20/03/06 15:00:23 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+20/03/06 15:00:26 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /__ / .__/\_,_/_/ /_/\_\   version 2.4.4
+      /_/
+
+Using Python version 2.7.12 (default, Oct  8 2019 14:14:10)
+SparkSession available as 'spark'.
+>>> 
+>>> import os
+>>> import json
+>>> import time
+>>> import requests 
+>>> import logging
+>>> 
+>>> from pyspark.sql import SparkSession,HiveContext
+>>> from pyspark.sql import *
+>>> from pyspark.sql import functions as  f 
+>>> from pyspark.sql.functions import *
+>>> from pyspark.sql.types import *
+>>> 
+>>> def hdfs():
+...     print("---creation of sparkdriver----")
+...     sparkdriver=SparkSession.builder.master('local').appName('demo').getOrCreate()
+...     print("---creationof data frame ----")
+...     df_hdfs=sparkdriver.read.format('parquet').option('delimiter','\t').option('header',True).load('hdfs://localhost:8020/hive/kalyan/hive1')
+...     df_hdfs.printSchema()
+...     df_hdfs.count()
+...     df_hdfs.show(10)
+... 
+>>> print("---hdfs done---")
+---hdfs done---
+>>> 
+>>> if __name == "__main__":
+...     hdfs()
+...     
+... print("hdfs calling done successfull---")
+  File "<stdin>", line 4
+    print("hdfs calling done successfull---")
+        ^
+SyntaxError: invalid syntax
+>>> 
+>>>     
+...     
+... df_hdfs.show()
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+NameError: name 'df_hdfs' is not defined
+>>> 
+
+
+>>> 
+>>> def hdfs():
+...     print("---creation of sparkdriver----")
+...     sparkdriver=SparkSession.builder.master('local').appName('demo').getOrCreate()
+...     print("---creationof data frame ----")
+...     df_hdfs=sparkdriver.read.format('parquet').option('delimiter','\t').option('header',True).load('hdfs://localhost:8020/hive/kalyan/hive1')
+...     df_hdfs.printSchema()
+...     df_hdfs.count()
+...     df_hdfs.show(10)
+... 
+>>> 
+>>> 
+>>> if __name == "__main__":
+...     hdfs()
+... 
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name '__name' is not defined
+>>> if __name__ == "__main__":
+...     hdfs()
+... 
+---creation of sparkdriver----
+---creationof data frame ----
+root                                                                            
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
++--------+-------------------+-----------------+---------------+                
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 10 rows
+
+>>> df_hdfs.show()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'df_hdfs' is not defined
+>>> 
+>>> 
+>>> def hdfs():
+...     print("---creation of sparkdriver----")
+...     sparkdriver=SparkSession.builder.master('local').appName('demo').getOrCreate()
+...     print("---creationof data frame ----")
+...     df_hdfs=sparkdriver.read.format('parquet').option('delimiter','\t').option('header',True).load('hdfs://localhost:8020/hive/kalyan/hive1')
+...     df_hdfs.printSchema()
+...     df_hdfs.count()
+...     df_hdfs.show(10)
+...     df_hdfs.write.format('csv').option('header',True).option('delimiter','\t').save('hdfs://localhost:8020/hive/kalyan/csv_op_1')
+... 
+>>> if __name__ == "__main__":
+...     hdfs()
+... 
+---creation of sparkdriver----
+---creationof data frame ----
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 10 rows
+
+>>>                                                                             
+
+
+
+>>> def rdbms():
+...     print("------creation of sparkdriver ----")
+...     sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
+...     print("creation of data frame from mysql db ---")
+...     df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+...     print("data frmae created successful---")
+... 
+>>> 
+>>> 
+>>> if __name__=="__main__":
+...     rdbms()
+... 
+------creation of sparkdriver ----
+creation of data frame from mysql db ---
+Fri Mar 06 15:20:44 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+data frmae created successful---
+>>> 
+>>> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>> 
+>>> def rdbms():
+...     print("------creation of sparkdriver ----")
+...     sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
+...     print("creation of data frame from mysql db ---")
+...     df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+...     print("data frmae created successful---")
+...     df_jdbc.show(2)
+...     df_jdbc.printSchema()
+... 
+>>> 
+>>> if __name__=="__main__":
+...     rdbms()
+... 
+------creation of sparkdriver ----
+creation of data frame from mysql db ---
+Fri Mar 06 15:21:17 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+data frmae created successful---
+Fri Mar 06 15:21:17 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 2 rows
+
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>> 
+
+>>> 
+>>> def rdbms():
+...     print("------creation of sparkdriver ----")
+...     sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
+...     print("creation of data frame from mysql db ---")
+...     df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+...     print("data frmae created successful---")
+...     df_jdbc.show(2)
+...     df_jdbc.printSchema()
+...     print("----write the data into rdbms---")
+...     df_jdbc.write.option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','sqoop.orders9').save()
+...     print("-----writing the data into sqoop database ---")
+... 
+>>> 
+>>> 
+>>> if __name__=="__main__":
+...     rdbms()
+... 
+------creation of sparkdriver ----
+creation of data frame from mysql db ---
+Fri Mar 06 15:23:43 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+data frmae created successful---
+Fri Mar 06 15:23:43 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 2 rows
+
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+----write the data into rdbms---
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "<stdin>", line 10, in rdbms
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/readwriter.py", line 736, in save
+    self._jwrite.save()
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 79, in deco
+    raise IllegalArgumentException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.IllegalArgumentException: u'Expected exactly one path to be specified, but got: '
+>>> 
+>>> 
+>>> def rdbms():
+...     print("------creation of sparkdriver ----")
+...     sparkdriver=SparkSession.builder.master('local').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').appName('demo2').getOrCreate()
+...     print("creation of data frame from mysql db ---")
+...     df_jdbc=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+...     print("data frmae created successful---")
+...     df_jdbc.show(2)
+...     df_jdbc.printSchema()
+...     print("----write the data into rdbms---")
+...     df_jdbc.write.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','sqoop.orders9').save()
+...     print("-----writing the data into sqoop database ---")
+... 
+>>> 
+>>> 
+>>> if __name__=="__main__":
+...     rdbms()
+... 
+------creation of sparkdriver ----
+creation of data frame from mysql db ---
+Fri Mar 06 15:24:25 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+data frmae created successful---
+Fri Mar 06 15:24:25 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 2 rows
+
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+----write the data into rdbms---
+Fri Mar 06 15:24:26 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:24:26 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:24:26 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:24:37 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+-----writing the data into sqoop database ---
+>>> 
+>>> def local():
+...     print("creation of sparkdriver for local ----")
+...     sparkdriver=SparkSession.builder.master('local').appName('demo3').getOrCreate()
+...     print("----creation of data frame from local sysytm---")
+...     df_local=sparkdriver.read.format('csv').option('delimiter','\t').option('header',True).load('/home/spark/wednesday/csv_op_2')
+...     df_local.show(10)
+...     df_local.printSchema()
+...     df_local.write.format('parquet').mode('overwrite').save('/home/spark/wednesday/parquet_op')
+... 
+>>> 
+>>> if __name__=="__main__":
+...     local()
+... 
+creation of sparkdriver for local ----
+----creation of data frame from local sysytm---
++--------+--------------------+-----------------+---------------+
+|order_id|          order_date|order_customer_id|   order_status|
++--------+--------------------+-----------------+---------------+
+|       1|2013-07-25T00:00:...|            11599|         CLOSED|
+|       2|2013-07-25T00:00:...|              256|PENDING_PAYMENT|
+|       3|2013-07-25T00:00:...|            12111|       COMPLETE|
+|       4|2013-07-25T00:00:...|             8827|         CLOSED|
+|       5|2013-07-25T00:00:...|            11318|       COMPLETE|
+|       6|2013-07-25T00:00:...|             7130|       COMPLETE|
+|       7|2013-07-25T00:00:...|             4530|       COMPLETE|
+|       8|2013-07-25T00:00:...|             2911|     PROCESSING|
+|       9|2013-07-25T00:00:...|             5657|PENDING_PAYMENT|
+|      10|2013-07-25T00:00:...|             5648|PENDING_PAYMENT|
++--------+--------------------+-----------------+---------------+
+only showing top 10 rows
+
+root
+ |-- order_id: string (nullable = true)
+ |-- order_date: string (nullable = true)
+ |-- order_customer_id: string (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>>                                                                             
+>>> 
+
+
+>>> def hiveTable():
+...     print("---creation sparkdriver -----")
+...     sparkdriver=SparkSession.builder.master('local').enableHiveSupport().appName('demo4').getOrCreate()
+...     print("----creation of data frame from hive table----")
+...     df_hive=sparkdriver.sql("select * from kalyan.rtrt")
+...     df_hive.show(10)
+...     df_hive.printSchema()
+...     df_hive.columns
+...     print("------write ing the data into hive table ---")
+...     df_hive.write.format('parquet').saveAsTable('kalyan.sisiva')
+... 
+>>> 
+>>> if __name__=="__main__":
+...     hiveTable()
+... 
+---creation sparkdriver -----
+----creation of data frame from hive table----
+Fri Mar 06 15:35:56 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:56 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:56 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:56 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:57 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:57 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:57 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 15:35:57 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+20/03/06 15:36:00 WARN ObjectStore: Failed to get database global_temp, returning NoSuchObjectException
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 10 rows
+
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+------write ing the data into hive table ---
+>>>                                                                             
+>>> 
+>>> 
+>>> sparkdriver=SparkSession.builder.master('local').enableHiveSupport.appName('demo5').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').getOrCreate()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'function' object has no attribute 'appName'
+>>> 
+>>> df_rdbms=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'sparkdriver' is not defined
+>>> df_rdbms.show(10)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'df_rdbms' is not defined
+>>> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>> 
+>>> sparkdriver=SparkSession.builder.master('local').enableHiveSupport.appName('demo5').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').getOrCreate()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'function' object has no attribute 'appName'
+>>> 
+>>> df_rdbms=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'sparkdriver' is not defined
+>>> df_rdbms.show(10)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'df_rdbms' is not defined
+>>> import os
+>>> import json
+>>> import time
+>>> import requests 
+>>> import logging
+>>> 
+>>> from pyspark.sql import SparkSession,HiveContext
+>>> from pyspark.sql import *
+>>> from pyspark.sql import functions as  f 
+>>> from pyspark.sql.functions import *
+>>> from pyspark.sql.types import *
+>>> 
+>>> sparkdriver=SparkSession.builder.master('local').enableHiveSupport.appName('demo5').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').getOrCreate()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'function' object has no attribute 'appName'
+>>> sparkdriver=SparkSession.builder.master('local').enableHiveSupport().appName('demo5').config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').getOrCreate()
+>>> 
+>>> df_rdbms=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('query','select * from kalyan.orders').load()
+Fri Mar 06 16:20:21 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+>>> df_rdbms.show(10)
+Fri Mar 06 16:20:22 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+only showing top 10 rows
+
+>>> df_rdbms.columns
+['order_id', 'order_date', 'order_customer_id', 'order_status']
+>>> df_rdbms.count()
+Fri Mar 06 16:20:35 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+68883
+>>> df_rdbms.take(2)
+Fri Mar 06 16:20:39 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+[Row(order_id=1, order_date=datetime.datetime(2013, 7, 25, 0, 0), order_customer_id=11599, order_status=u'CLOSED'), Row(order_id=2, order_date=datetime.datetime(2013, 7, 25, 0, 0), order_customer_id=256, order_status=u'PENDING_PAYMENT')]
+>>> 
+>>> df_rdbms.createOrReplaceTempView("student")
+>>> 
+>>> sparkdriver.sql("show tables").show()
++--------+---------+-----------+
+|database|tableName|isTemporary|
++--------+---------+-----------+
+| default|     siva|      false|
+|        |  student|       true|
++--------+---------+-----------+
+
+>>> 
+>>> sparkdriver.catalog.listTables()
+[Table(name=u'siva', database=u'default', description=None, tableType=u'EXTERNAL', isTemporary=False), Table(name=u'student', database=None, description=None, tableType=u'TEMPORARY', isTemporary=True)]
+>>> sparkdriver.sql("show tables").collect()
+[Row(database=u'default', tableName=u'siva', isTemporary=False), Row(database=u'', tableName=u'student', isTemporary=True)]
+>>> 
+>>> sparkdriver.sql("select * from student").show()
+Fri Mar 06 16:21:41 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> df_rdbms.show()
+Fri Mar 06 16:21:42 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> sparkdriver.sql("select order_id,order_date from student ").show()
+Fri Mar 06 16:21:53 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+
+|order_id|         order_date|
++--------+-------------------+
+|       1|2013-07-25 00:00:00|
+|       2|2013-07-25 00:00:00|
+|       3|2013-07-25 00:00:00|
+|       4|2013-07-25 00:00:00|
+|       5|2013-07-25 00:00:00|
+|       6|2013-07-25 00:00:00|
+|       7|2013-07-25 00:00:00|
+|       8|2013-07-25 00:00:00|
+|       9|2013-07-25 00:00:00|
+|      10|2013-07-25 00:00:00|
+|      11|2013-07-25 00:00:00|
+|      12|2013-07-25 00:00:00|
+|      13|2013-07-25 00:00:00|
+|      14|2013-07-25 00:00:00|
+|      15|2013-07-25 00:00:00|
+|      16|2013-07-25 00:00:00|
+|      17|2013-07-25 00:00:00|
+|      18|2013-07-25 00:00:00|
+|      19|2013-07-25 00:00:00|
+|      20|2013-07-25 00:00:00|
++--------+-------------------+
+only showing top 20 rows
+
+>>> df_rdbms.select("order_id","order_date").show()
+Fri Mar 06 16:21:54 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+
+|order_id|         order_date|
++--------+-------------------+
+|       1|2013-07-25 00:00:00|
+|       2|2013-07-25 00:00:00|
+|       3|2013-07-25 00:00:00|
+|       4|2013-07-25 00:00:00|
+|       5|2013-07-25 00:00:00|
+|       6|2013-07-25 00:00:00|
+|       7|2013-07-25 00:00:00|
+|       8|2013-07-25 00:00:00|
+|       9|2013-07-25 00:00:00|
+|      10|2013-07-25 00:00:00|
+|      11|2013-07-25 00:00:00|
+|      12|2013-07-25 00:00:00|
+|      13|2013-07-25 00:00:00|
+|      14|2013-07-25 00:00:00|
+|      15|2013-07-25 00:00:00|
+|      16|2013-07-25 00:00:00|
+|      17|2013-07-25 00:00:00|
+|      18|2013-07-25 00:00:00|
+|      19|2013-07-25 00:00:00|
+|      20|2013-07-25 00:00:00|
++--------+-------------------+
+only showing top 20 rows
+
+>>> df_rdbms.select(df_rdbms.order_id,df_rdbms.order_date).show(10)
+Fri Mar 06 16:21:54 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+
+|order_id|         order_date|
++--------+-------------------+
+|       1|2013-07-25 00:00:00|
+|       2|2013-07-25 00:00:00|
+|       3|2013-07-25 00:00:00|
+|       4|2013-07-25 00:00:00|
+|       5|2013-07-25 00:00:00|
+|       6|2013-07-25 00:00:00|
+|       7|2013-07-25 00:00:00|
+|       8|2013-07-25 00:00:00|
+|       9|2013-07-25 00:00:00|
+|      10|2013-07-25 00:00:00|
++--------+-------------------+
+only showing top 10 rows
+
+>>> 
+>>> 
+>>> sparkdriver.sql("select order_id,order_date from student where order_id>1000 and order_id<1010").show()
+Fri Mar 06 16:22:10 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+
+|order_id|         order_date|
++--------+-------------------+
+|    1001|2013-07-30 00:00:00|
+|    1002|2013-07-30 00:00:00|
+|    1003|2013-07-30 00:00:00|
+|    1004|2013-07-30 00:00:00|
+|    1005|2013-07-30 00:00:00|
+|    1006|2013-07-30 00:00:00|
+|    1007|2013-07-30 00:00:00|
+|    1008|2013-07-30 00:00:00|
+|    1009|2013-07-30 00:00:00|
++--------+-------------------+
+
+>>> df_rdbms.select("order_id","order_date").where("order_id>1000").filter("order_id<1010").show() 
+Fri Mar 06 16:22:10 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+
+|order_id|         order_date|
++--------+-------------------+
+|    1001|2013-07-30 00:00:00|
+|    1002|2013-07-30 00:00:00|
+|    1003|2013-07-30 00:00:00|
+|    1004|2013-07-30 00:00:00|
+|    1005|2013-07-30 00:00:00|
+|    1006|2013-07-30 00:00:00|
+|    1007|2013-07-30 00:00:00|
+|    1008|2013-07-30 00:00:00|
+|    1009|2013-07-30 00:00:00|
++--------+-------------------+
+
+>>> 
+
+
+
+>>> 
+>>> sparkdriver.sql("select order_status,count(1) from student group by order_status").show()
+Fri Mar 06 16:22:27 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---------------+--------+
+|   order_status|count(1)|
++---------------+--------+
+|PENDING_PAYMENT|   15030|
+|       COMPLETE|   22899|
+|        ON_HOLD|    3798|
+| PAYMENT_REVIEW|     729|
+|     PROCESSING|    8275|
+|         CLOSED|    7556|
+|SUSPECTED_FRAUD|    1558|
+|        PENDING|    7610|
+|       CANCELED|    1428|
++---------------+--------+
+
+>>> df_rdbms.groupBy("order_status").count().show()
+Fri Mar 06 16:22:29 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---------------+-----+
+|   order_status|count|
++---------------+-----+
+|PENDING_PAYMENT|15030|
+|       COMPLETE|22899|
+|        ON_HOLD| 3798|
+| PAYMENT_REVIEW|  729|
+|     PROCESSING| 8275|
+|         CLOSED| 7556|
+|SUSPECTED_FRAUD| 1558|
+|        PENDING| 7610|
+|       CANCELED| 1428|
++---------------+-----+
+
+>>> df_rdbms.groupBy(df_rdbms.order_status).count().show()
+Fri Mar 06 16:22:32 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---------------+-----+
+|   order_status|count|
++---------------+-----+
+|PENDING_PAYMENT|15030|
+|       COMPLETE|22899|
+|        ON_HOLD| 3798|
+| PAYMENT_REVIEW|  729|
+|     PROCESSING| 8275|
+|         CLOSED| 7556|
+|SUSPECTED_FRAUD| 1558|
+|        PENDING| 7610|
+|       CANCELED| 1428|
++---------------+-----+
+
+>>> 
+>>> 
+>>> sparkdriver.sql("select substr(order_status,1,1) as ch,count() from student group by ch").show()
+Fri Mar 06 16:22:45 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---+-------+
+| ch|count()|
++---+-------+
+|  O|      0|
+|  C|      0|
+|  S|      0|
+|  P|      0|
++---+-------+
+
+>>> df_rdbms.groupBy(df_rdbms.substr(1,1)).count().show()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1301, in __getattr__
+    "'%s' object has no attribute '%s'" % (self.__class__.__name__, name))
+AttributeError: 'DataFrame' object has no attribute 'substr'
+>>> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>> 
+>>> sparkdriver.sql("select substr(order_status,1,1) as ch,count() from student group by ch").show()
+Fri Mar 06 16:23:17 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---+-------+
+| ch|count()|
++---+-------+
+|  O|      0|
+|  C|      0|
+|  S|      0|
+|  P|      0|
++---+-------+
+
+>>> df_rdbms.groupBy(df_rdbms.order_status.substr(1,1)).count().show()
+Fri Mar 06 16:23:18 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++-----------------------------+-----+
+|substring(order_status, 1, 1)|count|
++-----------------------------+-----+
+|                            O| 3798|
+|                            C|31883|
+|                            S| 1558|
+|                            P|31644|
++-----------------------------+-----+
+
+>>> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>> 
+>>> sparkdriver.sql("select order_status,count(),min(order_id),max(order_id) from student group by order_status").show()
+Fri Mar 06 16:23:32 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---------------+-------+-------------+-------------+
+|   order_status|count()|min(order_id)|max(order_id)|
++---------------+-------+-------------+-------------+
+|PENDING_PAYMENT|      0|            2|        68881|
+|       COMPLETE|      0|            3|        68883|
+|        ON_HOLD|      0|           46|        68882|
+| PAYMENT_REVIEW|      0|           11|        68568|
+|     PROCESSING|      0|            8|        68869|
+|         CLOSED|      0|            1|        68863|
+|SUSPECTED_FRAUD|      0|           69|        68865|
+|        PENDING|      0|           21|        68873|
+|       CANCELED|      0|           50|        68867|
++---------------+-------+-------------+-------------+
+
+>>> df_rdbms.groupBy(df_rdbms.order_status).agg(f.count(df_rdbms.order_status),f.min(df_rdbms.order_id),f.max(df_rdbms.order_id)).show()
+Fri Mar 06 16:23:33 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---------------+-------------------+-------------+-------------+
+|   order_status|count(order_status)|min(order_id)|max(order_id)|
++---------------+-------------------+-------------+-------------+
+|PENDING_PAYMENT|              15030|            2|        68881|
+|       COMPLETE|              22899|            3|        68883|
+|        ON_HOLD|               3798|           46|        68882|
+| PAYMENT_REVIEW|                729|           11|        68568|
+|     PROCESSING|               8275|            8|        68869|
+|         CLOSED|               7556|            1|        68863|
+|SUSPECTED_FRAUD|               1558|           69|        68865|
+|        PENDING|               7610|           21|        68873|
+|       CANCELED|               1428|           50|        68867|
++---------------+-------------------+-------------+-------------+
+
+>>> 
+
+
+
+>>> 
+>>> df=df_rdbms.alias("df")
+>>> df.show()
+Fri Mar 06 16:23:58 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> df_rdbms.show()
+Fri Mar 06 16:23:58 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> 
+>>> df.printSchema()
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>> df_rdbms.printSchema()
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>> 
+>>> 
+>>> df.count()
+Fri Mar 06 16:24:18 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+68883
+>>> df_rdbms.count()
+Fri Mar 06 16:24:18 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+68883
+>>> 
+>>> df.createOrReplaceTempView("sample1")
+>>> df.createGlobalTempView("sample2")
+>>> sparkdriver.sql("show tables").collect()
+[Row(database=u'default', tableName=u'siva', isTemporary=False), Row(database=u'', tableName=u'sample1', isTemporary=True), Row(database=u'', tableName=u'student', isTemporary=True)]
+>>> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>> sparkdriver.sql("select * from sample1").show()
+Fri Mar 06 16:24:55 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> sparkdriver.sql("select * from global_temp.sample2").show()
+Fri Mar 06 16:24:55 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> 
+>>> spark=sparkdriver.newSession()
+>>> 
+>>> spark.sql("select * from global_temp.sample2").show()
+Fri Mar 06 16:25:21 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+only showing top 20 rows
+
+>>> 
+>>> df1=df.where("order_id%2==0")
+>>> df2=df.where("order_id%2==1")
+>>> df1.count()
+Fri Mar 06 16:25:21 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+34441
+>>> df2.count()
+Fri Mar 06 16:25:21 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+34442
+>>> df.count()
+Fri Mar 06 16:25:21 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+68883
+>>> df1.printSchema()
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>> df2.printSchema()
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>> 
+>>> 
+>>> df1.join(df2,df1.order_status==df2.order_status,'inner').count()
+20/03/06 16:25:58 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:25:58 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:25:58 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+238289143                                                                       
+>>> 
+>>> 
+>>> df6=df1.limit(10)
+>>> 
+>>> df6.printSchema()
+root
+ |-- order_id: integer (nullable = true)
+ |-- order_date: timestamp (nullable = true)
+ |-- order_customer_id: integer (nullable = true)
+ |-- order_status: string (nullable = true)
+
+>>> df9=df2.limit(10)
+>>> 
+>>> df6.join(df9,df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:26:00 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:26:01 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:26:01 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'inner').count()
+20/03/06 16:26:01 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#749,order_id#748 in operator !Join Inner, (order_status#219 = order_status#219).;;\n!Join Inner, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#749, order_id#748]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#748 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#748,order_date#749,order_customer_id#750,order_status#751] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:26:01 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#757,order_id#756 in operator !Join Inner, (order_status#219 = order_status#219).;;\n!Join Inner, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#757, order_id#756]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#756 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#756,order_date#757,order_customer_id#758,order_status#759] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'left_outer').show()
+20/03/06 16:26:01 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#765,order_id#764 in operator !Join LeftOuter, (order_status#219 = order_status#219).;;\n!Join LeftOuter, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#765, order_id#764]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#764 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#764,order_date#765,order_customer_id#766,order_status#767] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> 
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'right_outer').count()
+20/03/06 16:26:02 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#773,order_id#772 in operator !Join RightOuter, (order_status#219 = order_status#219).;;\n!Join RightOuter, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#773, order_id#772]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#772 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#772,order_date#773,order_customer_id#774,order_status#775] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'full_outer').count()
+20/03/06 16:26:02 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#781,order_id#780 in operator !Join FullOuter, (order_status#219 = order_status#219).;;\n!Join FullOuter, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#781, order_id#780]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#780 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#780,order_date#781,order_customer_id#782,order_status#783] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> df6.join(df9,df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:26:14 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:26:14 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:26:15 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+
+>>> 
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'inner').count()
+20/03/06 16:26:41 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#850,order_id#849 in operator !Join Inner, (order_status#219 = order_status#219).;;\n!Join Inner, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#850, order_id#849]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#849 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#849,order_date#850,order_customer_id#851,order_status#852] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select(df9.order_date,df9.order_id),df6.order_status==df9.order_status,'inner').count()
+20/03/06 16:27:10 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#858,order_id#857 in operator !Join Inner, (order_status#219 = order_status#219).;;\n!Join Inner, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#858, order_id#857]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#857 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#857,order_date#858,order_customer_id#859,order_status#860] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> df6.select(df6.order_id,df6.order_date).join(df9.select(df9.order_date,df9.order_id),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:27:44 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#866,order_id#865 in operator !Join Inner, (order_status#219 = order_status#219).;;\n!Join Inner, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#866, order_id#865]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#865 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#865,order_date#866,order_customer_id#867,order_status#868] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> 
+>>> df6.select("order_id","order_date").join(df9.select("order_date","order_id"),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:28:34 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Resolved attribute(s) order_status#219 missing from order_id#216,order_date#217,order_date#874,order_id#873 in operator !Join Inner, (order_status#219 = order_status#219).;;\n!Join Inner, (order_status#219 = order_status#219)\n:- Project [order_id#216, order_date#217]\n:  +- GlobalLimit 10\n:     +- LocalLimit 10\n:        +- Filter ((order_id#216 % 2) = 0)\n:           +- SubqueryAlias `df`\n:              +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n+- Project [order_date#874, order_id#873]\n   +- GlobalLimit 10\n      +- LocalLimit 10\n         +- Filter ((order_id#873 % 2) = 1)\n            +- SubqueryAlias `df`\n               +- Relation[order_id#873,order_date#874,order_customer_id#875,order_status#876] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]\n'
+>>> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>> 
+>>> df6.orderBy("order_id").show()
+Fri Mar 06 16:29:06 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+
+>>> df6.orderBy(desc("order_id").show()
+... df6.orderBy(asc("order_id").show() 
+  File "<stdin>", line 2
+    df6.orderBy(asc("order_id").show() 
+      ^
+SyntaxError: invalid syntax
+>>> df6.orderBy(desc("order_id")).show()
+Fri Mar 06 16:29:18 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+
+>>> df6.orderBy(asc("order_id")).show() 
+Fri Mar 06 16:29:24 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+
+>>> 
+>>> 
+>>> df6.cube(df6.order_id,df6.order_status).count().show()
+Fri Mar 06 16:29:43 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+-----+
+|order_id|   order_status|count|
++--------+---------------+-----+
+|       6|           null|    1|
+|      18|           null|    1|
+|    null|     PROCESSING|    3|
+|       2|PENDING_PAYMENT|    1|
+|      12|         CLOSED|    1|
+|      12|           null|    1|
+|    null|           null|   10|
+|      18|         CLOSED|    1|
+|    null|       COMPLETE|    1|
+|      16|PENDING_PAYMENT|    1|
+|      10|           null|    1|
+|       8|           null|    1|
+|    null|PENDING_PAYMENT|    3|
+|       2|           null|    1|
+|      20|     PROCESSING|    1|
+|      16|           null|    1|
+|      20|           null|    1|
+|       6|       COMPLETE|    1|
+|      10|PENDING_PAYMENT|    1|
+|      14|           null|    1|
++--------+---------------+-----+
+only showing top 20 rows
+
+>>> df6.rollup(df6.order_id,df6.order_status).count().show() 
+Fri Mar 06 16:29:44 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+-----+
+|order_id|   order_status|count|
++--------+---------------+-----+
+|       6|           null|    1|
+|      18|           null|    1|
+|       2|PENDING_PAYMENT|    1|
+|      12|         CLOSED|    1|
+|      12|           null|    1|
+|    null|           null|   10|
+|      18|         CLOSED|    1|
+|      16|PENDING_PAYMENT|    1|
+|      10|           null|    1|
+|       8|           null|    1|
+|       2|           null|    1|
+|      20|     PROCESSING|    1|
+|      16|           null|    1|
+|      20|           null|    1|
+|       6|       COMPLETE|    1|
+|      10|PENDING_PAYMENT|    1|
+|      14|           null|    1|
+|       8|     PROCESSING|    1|
+|       4|           null|    1|
+|       4|         CLOSED|    1|
++--------+---------------+-----+
+only showing top 20 rows
+
+>>> 
+>>> df6.show()
+Fri Mar 06 16:29:54 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+
+>>> df6.selectExpr("order_id+1 as myid").show()
+Fri Mar 06 16:29:55 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++----+
+|myid|
++----+
+|   3|
+|   5|
+|   7|
+|   9|
+|  11|
+|  13|
+|  15|
+|  17|
+|  19|
+|  21|
++----+
+
+>>> 
+>>> df6.withColumn("sivaid",df6.order_id+1).show()
+Fri Mar 06 16:30:16 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+------+
+|order_id|         order_date|order_customer_id|   order_status|sivaid|
++--------+-------------------+-----------------+---------------+------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|     3|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|     5|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|     7|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|     9|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|    11|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|    13|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|    15|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|    17|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|    19|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|    21|
++--------+-------------------+-----------------+---------------+------+
+
+>>> df6.withColumn("zone",f.when(df6.order_status=="COMPLETE","OK").when(df6.order_status=="PROCESSING","WAIT").otherwise("fail")).show()
+Fri Mar 06 16:30:17 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+----+
+|order_id|         order_date|order_customer_id|   order_status|zone|
++--------+-------------------+-----------------+---------------+----+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|fail|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|fail|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|  OK|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|WAIT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|fail|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|fail|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|WAIT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|fail|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|fail|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|WAIT|
++--------+-------------------+-----------------+---------------+----+
+
+>>> 
+>>> df6.withColumnRenamed("order_id","idd")
+DataFrame[idd: int, order_date: timestamp, order_customer_id: int, order_status: string]
+>>> 
+>>> df6.cube(df6.order_id,df6.order_status).count().na.replace("COMPLETE",None).show()  
+Fri Mar 06 16:30:33 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+-----+
+|order_id|   order_status|count|
++--------+---------------+-----+
+|       6|           null|    1|
+|      18|           null|    1|
+|    null|     PROCESSING|    3|
+|       2|PENDING_PAYMENT|    1|
+|      12|         CLOSED|    1|
+|      12|           null|    1|
+|    null|           null|   10|
+|      18|         CLOSED|    1|
+|    null|           null|    1|
+|      16|PENDING_PAYMENT|    1|
+|      10|           null|    1|
+|       8|           null|    1|
+|    null|PENDING_PAYMENT|    3|
+|       2|           null|    1|
+|      20|     PROCESSING|    1|
+|      16|           null|    1|
+|      20|           null|    1|
+|       6|           null|    1|
+|      10|PENDING_PAYMENT|    1|
+|      14|           null|    1|
++--------+---------------+-----+
+only showing top 20 rows
+
+>>> df6.cube(df6.order_id,df6.order_status).count().na.replace("COMPLETE","ok",'order_status').show()   
+Fri Mar 06 16:30:33 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+-----+
+|order_id|   order_status|count|
++--------+---------------+-----+
+|       6|           null|    1|
+|      18|           null|    1|
+|    null|     PROCESSING|    3|
+|       2|PENDING_PAYMENT|    1|
+|      12|         CLOSED|    1|
+|      12|           null|    1|
+|    null|           null|   10|
+|      18|         CLOSED|    1|
+|    null|             ok|    1|
+|      16|PENDING_PAYMENT|    1|
+|      10|           null|    1|
+|       8|           null|    1|
+|    null|PENDING_PAYMENT|    3|
+|       2|           null|    1|
+|      20|     PROCESSING|    1|
+|      16|           null|    1|
+|      20|           null|    1|
+|       6|             ok|    1|
+|      10|PENDING_PAYMENT|    1|
+|      14|           null|    1|
++--------+---------------+-----+
+only showing top 20 rows
+
+>>> df6.withColumnRenamed("order_id","idd")
+DataFrame[idd: int, order_date: timestamp, order_customer_id: int, order_status: string]
+>>> df6.withColumnRenamed("order_id","idd").show()
+Fri Mar 06 16:30:43 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++---+-------------------+-----------------+---------------+
+|idd|         order_date|order_customer_id|   order_status|
++---+-------------------+-----------------+---------------+
+|  2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|  4|2013-07-25 00:00:00|             8827|         CLOSED|
+|  6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|  8|2013-07-25 00:00:00|             2911|     PROCESSING|
+| 10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+| 12|2013-07-25 00:00:00|             1837|         CLOSED|
+| 14|2013-07-25 00:00:00|             9842|     PROCESSING|
+| 16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+| 18|2013-07-25 00:00:00|             1205|         CLOSED|
+| 20|2013-07-25 00:00:00|             9198|     PROCESSING|
++---+-------------------+-----------------+---------------+
+
+>>> 
+>>> df6.drop("order_status").show()
+Fri Mar 06 16:30:59 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+
+|order_id|         order_date|order_customer_id|
++--------+-------------------+-----------------+
+|       2|2013-07-25 00:00:00|              256|
+|       4|2013-07-25 00:00:00|             8827|
+|       6|2013-07-25 00:00:00|             7130|
+|       8|2013-07-25 00:00:00|             2911|
+|      10|2013-07-25 00:00:00|             5648|
+|      12|2013-07-25 00:00:00|             1837|
+|      14|2013-07-25 00:00:00|             9842|
+|      16|2013-07-25 00:00:00|             7276|
+|      18|2013-07-25 00:00:00|             1205|
+|      20|2013-07-25 00:00:00|             9198|
++--------+-------------------+-----------------+
+
+>>> df6.drop("order_id","order_date").show()
+Fri Mar 06 16:31:00 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++-----------------+---------------+
+|order_customer_id|   order_status|
++-----------------+---------------+
+|              256|PENDING_PAYMENT|
+|             8827|         CLOSED|
+|             7130|       COMPLETE|
+|             2911|     PROCESSING|
+|             5648|PENDING_PAYMENT|
+|             1837|         CLOSED|
+|             9842|     PROCESSING|
+|             7276|PENDING_PAYMENT|
+|             1205|         CLOSED|
+|             9198|     PROCESSING|
++-----------------+---------------+
+
+>>> 
+>>> df6.dropDuplicates(['order_status']).show()
+Fri Mar 06 16:31:10 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+
+>>> df6.exceptAll(df9).show()
+Fri Mar 06 16:31:11 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:31:11 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+
+>>> 
+>>> sparkdriver.catalog.listFunctions.count()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'function' object has no attribute 'count'
+>>> sparkdriver.catalog.listDatabases().collect()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'list' object has no attribute 'collect'
+>>> sparkdriver.catalog.listFunctions().count()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: count() takes exactly one argument (0 given)
+>>> sparkdriver.catalog.listFunctions()
+[Function(name=u'!', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Not', isTemporary=True), Function(name=u'%', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Remainder', isTemporary=True), Function(name=u'&', description=None, className=u'org.apache.spark.sql.catalyst.expressions.BitwiseAnd', isTemporary=True), Function(name=u'*', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Multiply', isTemporary=True), Function(name=u'+', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Add', isTemporary=True), Function(name=u'-', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Subtract', isTemporary=True), Function(name=u'/', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Divide', isTemporary=True), Function(name=u'<', description=None, className=u'org.apache.spark.sql.catalyst.expressions.LessThan', isTemporary=True), Function(name=u'<=', description=None, className=u'org.apache.spark.sql.catalyst.expressions.LessThanOrEqual', isTemporary=True), Function(name=u'<=>', description=None, className=u'org.apache.spark.sql.catalyst.expressions.EqualNullSafe', isTemporary=True), Function(name=u'=', description=None, className=u'org.apache.spark.sql.catalyst.expressions.EqualTo', isTemporary=True), Function(name=u'==', description=None, className=u'org.apache.spark.sql.catalyst.expressions.EqualTo', isTemporary=True), Function(name=u'>', description=None, className=u'org.apache.spark.sql.catalyst.expressions.GreaterThan', isTemporary=True), Function(name=u'>=', description=None, className=u'org.apache.spark.sql.catalyst.expressions.GreaterThanOrEqual', isTemporary=True), Function(name=u'^', description=None, className=u'org.apache.spark.sql.catalyst.expressions.BitwiseXor', isTemporary=True), Function(name=u'abs', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Abs', isTemporary=True), Function(name=u'acos', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Acos', isTemporary=True), Function(name=u'add_months', description=None, className=u'org.apache.spark.sql.catalyst.expressions.AddMonths', isTemporary=True), Function(name=u'aggregate', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayAggregate', isTemporary=True), Function(name=u'and', description=None, className=u'org.apache.spark.sql.catalyst.expressions.And', isTemporary=True), Function(name=u'approx_count_distinct', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.HyperLogLogPlusPlus', isTemporary=True), Function(name=u'approx_percentile', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.ApproximatePercentile', isTemporary=True), Function(name=u'array', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CreateArray', isTemporary=True), Function(name=u'array_contains', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayContains', isTemporary=True), Function(name=u'array_distinct', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayDistinct', isTemporary=True), Function(name=u'array_except', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayExcept', isTemporary=True), Function(name=u'array_intersect', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayIntersect', isTemporary=True), Function(name=u'array_join', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayJoin', isTemporary=True), Function(name=u'array_max', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayMax', isTemporary=True), Function(name=u'array_min', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayMin', isTemporary=True), Function(name=u'array_position', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayPosition', isTemporary=True), Function(name=u'array_remove', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayRemove', isTemporary=True), Function(name=u'array_repeat', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayRepeat', isTemporary=True), Function(name=u'array_sort', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArraySort', isTemporary=True), Function(name=u'array_union', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayUnion', isTemporary=True), Function(name=u'arrays_overlap', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArraysOverlap', isTemporary=True), Function(name=u'arrays_zip', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArraysZip', isTemporary=True), Function(name=u'ascii', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Ascii', isTemporary=True), Function(name=u'asin', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Asin', isTemporary=True), Function(name=u'assert_true', description=None, className=u'org.apache.spark.sql.catalyst.expressions.AssertTrue', isTemporary=True), Function(name=u'atan', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Atan', isTemporary=True), Function(name=u'atan2', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Atan2', isTemporary=True), Function(name=u'avg', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Average', isTemporary=True), Function(name=u'base64', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Base64', isTemporary=True), Function(name=u'bigint', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'bin', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Bin', isTemporary=True), Function(name=u'binary', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'bit_length', description=None, className=u'org.apache.spark.sql.catalyst.expressions.BitLength', isTemporary=True), Function(name=u'boolean', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'bround', description=None, className=u'org.apache.spark.sql.catalyst.expressions.BRound', isTemporary=True), Function(name=u'cardinality', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Size', isTemporary=True), Function(name=u'cast', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'cbrt', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cbrt', isTemporary=True), Function(name=u'ceil', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Ceil', isTemporary=True), Function(name=u'ceiling', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Ceil', isTemporary=True), Function(name=u'char', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Chr', isTemporary=True), Function(name=u'char_length', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Length', isTemporary=True), Function(name=u'character_length', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Length', isTemporary=True), Function(name=u'chr', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Chr', isTemporary=True), Function(name=u'coalesce', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Coalesce', isTemporary=True), Function(name=u'collect_list', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.CollectList', isTemporary=True), Function(name=u'collect_set', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.CollectSet', isTemporary=True), Function(name=u'concat', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Concat', isTemporary=True), Function(name=u'concat_ws', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ConcatWs', isTemporary=True), Function(name=u'conv', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Conv', isTemporary=True), Function(name=u'corr', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Corr', isTemporary=True), Function(name=u'cos', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cos', isTemporary=True), Function(name=u'cosh', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cosh', isTemporary=True), Function(name=u'cot', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cot', isTemporary=True), Function(name=u'count', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Count', isTemporary=True), Function(name=u'count_min_sketch', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.CountMinSketchAgg', isTemporary=True), Function(name=u'covar_pop', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.CovPopulation', isTemporary=True), Function(name=u'covar_samp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.CovSample', isTemporary=True), Function(name=u'crc32', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Crc32', isTemporary=True), Function(name=u'cube', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cube', isTemporary=True), Function(name=u'cume_dist', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CumeDist', isTemporary=True), Function(name=u'current_database', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CurrentDatabase', isTemporary=True), Function(name=u'current_date', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CurrentDate', isTemporary=True), Function(name=u'current_timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CurrentTimestamp', isTemporary=True), Function(name=u'date', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'date_add', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DateAdd', isTemporary=True), Function(name=u'date_format', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DateFormatClass', isTemporary=True), Function(name=u'date_sub', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DateSub', isTemporary=True), Function(name=u'date_trunc', description=None, className=u'org.apache.spark.sql.catalyst.expressions.TruncTimestamp', isTemporary=True), Function(name=u'datediff', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DateDiff', isTemporary=True), Function(name=u'day', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DayOfMonth', isTemporary=True), Function(name=u'dayofmonth', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DayOfMonth', isTemporary=True), Function(name=u'dayofweek', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DayOfWeek', isTemporary=True), Function(name=u'dayofyear', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DayOfYear', isTemporary=True), Function(name=u'decimal', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'decode', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Decode', isTemporary=True), Function(name=u'degrees', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ToDegrees', isTemporary=True), Function(name=u'dense_rank', description=None, className=u'org.apache.spark.sql.catalyst.expressions.DenseRank', isTemporary=True), Function(name=u'double', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'e', description=None, className=u'org.apache.spark.sql.catalyst.expressions.EulerNumber', isTemporary=True), Function(name=u'element_at', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ElementAt', isTemporary=True), Function(name=u'elt', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Elt', isTemporary=True), Function(name=u'encode', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Encode', isTemporary=True), Function(name=u'exists', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayExists', isTemporary=True), Function(name=u'exp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Exp', isTemporary=True), Function(name=u'explode', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Explode', isTemporary=True), Function(name=u'explode_outer', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Explode', isTemporary=True), Function(name=u'expm1', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Expm1', isTemporary=True), Function(name=u'factorial', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Factorial', isTemporary=True), Function(name=u'filter', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayFilter', isTemporary=True), Function(name=u'find_in_set', description=None, className=u'org.apache.spark.sql.catalyst.expressions.FindInSet', isTemporary=True), Function(name=u'first', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.First', isTemporary=True), Function(name=u'first_value', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.First', isTemporary=True), Function(name=u'flatten', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Flatten', isTemporary=True), Function(name=u'float', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'floor', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Floor', isTemporary=True), Function(name=u'format_number', description=None, className=u'org.apache.spark.sql.catalyst.expressions.FormatNumber', isTemporary=True), Function(name=u'format_string', description=None, className=u'org.apache.spark.sql.catalyst.expressions.FormatString', isTemporary=True), Function(name=u'from_json', description=None, className=u'org.apache.spark.sql.catalyst.expressions.JsonToStructs', isTemporary=True), Function(name=u'from_unixtime', description=None, className=u'org.apache.spark.sql.catalyst.expressions.FromUnixTime', isTemporary=True), Function(name=u'from_utc_timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.FromUTCTimestamp', isTemporary=True), Function(name=u'get_json_object', description=None, className=u'org.apache.spark.sql.catalyst.expressions.GetJsonObject', isTemporary=True), Function(name=u'greatest', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Greatest', isTemporary=True), Function(name=u'grouping', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Grouping', isTemporary=True), Function(name=u'grouping_id', description=None, className=u'org.apache.spark.sql.catalyst.expressions.GroupingID', isTemporary=True), Function(name=u'hash', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Murmur3Hash', isTemporary=True), Function(name=u'hex', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Hex', isTemporary=True), Function(name=u'hour', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Hour', isTemporary=True), Function(name=u'hypot', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Hypot', isTemporary=True), Function(name=u'if', description=None, className=u'org.apache.spark.sql.catalyst.expressions.If', isTemporary=True), Function(name=u'ifnull', description=None, className=u'org.apache.spark.sql.catalyst.expressions.IfNull', isTemporary=True), Function(name=u'in', description=None, className=u'org.apache.spark.sql.catalyst.expressions.In', isTemporary=True), Function(name=u'initcap', description=None, className=u'org.apache.spark.sql.catalyst.expressions.InitCap', isTemporary=True), Function(name=u'inline', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Inline', isTemporary=True), Function(name=u'inline_outer', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Inline', isTemporary=True), Function(name=u'input_file_block_length', description=None, className=u'org.apache.spark.sql.catalyst.expressions.InputFileBlockLength', isTemporary=True), Function(name=u'input_file_block_start', description=None, className=u'org.apache.spark.sql.catalyst.expressions.InputFileBlockStart', isTemporary=True), Function(name=u'input_file_name', description=None, className=u'org.apache.spark.sql.catalyst.expressions.InputFileName', isTemporary=True), Function(name=u'instr', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringInstr', isTemporary=True), Function(name=u'int', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'isnan', description=None, className=u'org.apache.spark.sql.catalyst.expressions.IsNaN', isTemporary=True), Function(name=u'isnotnull', description=None, className=u'org.apache.spark.sql.catalyst.expressions.IsNotNull', isTemporary=True), Function(name=u'isnull', description=None, className=u'org.apache.spark.sql.catalyst.expressions.IsNull', isTemporary=True), Function(name=u'java_method', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CallMethodViaReflection', isTemporary=True), Function(name=u'json_tuple', description=None, className=u'org.apache.spark.sql.catalyst.expressions.JsonTuple', isTemporary=True), Function(name=u'kurtosis', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Kurtosis', isTemporary=True), Function(name=u'lag', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Lag', isTemporary=True), Function(name=u'last', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Last', isTemporary=True), Function(name=u'last_day', description=None, className=u'org.apache.spark.sql.catalyst.expressions.LastDay', isTemporary=True), Function(name=u'last_value', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Last', isTemporary=True), Function(name=u'lcase', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Lower', isTemporary=True), Function(name=u'lead', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Lead', isTemporary=True), Function(name=u'least', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Least', isTemporary=True), Function(name=u'left', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Left', isTemporary=True), Function(name=u'length', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Length', isTemporary=True), Function(name=u'levenshtein', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Levenshtein', isTemporary=True), Function(name=u'like', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Like', isTemporary=True), Function(name=u'ln', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Log', isTemporary=True), Function(name=u'locate', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringLocate', isTemporary=True), Function(name=u'log', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Logarithm', isTemporary=True), Function(name=u'log10', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Log10', isTemporary=True), Function(name=u'log1p', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Log1p', isTemporary=True), Function(name=u'log2', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Log2', isTemporary=True), Function(name=u'lower', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Lower', isTemporary=True), Function(name=u'lpad', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringLPad', isTemporary=True), Function(name=u'ltrim', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringTrimLeft', isTemporary=True), Function(name=u'map', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CreateMap', isTemporary=True), Function(name=u'map_concat', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MapConcat', isTemporary=True), Function(name=u'map_from_arrays', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MapFromArrays', isTemporary=True), Function(name=u'map_from_entries', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MapFromEntries', isTemporary=True), Function(name=u'map_keys', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MapKeys', isTemporary=True), Function(name=u'map_values', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MapValues', isTemporary=True), Function(name=u'max', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Max', isTemporary=True), Function(name=u'md5', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Md5', isTemporary=True), Function(name=u'mean', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Average', isTemporary=True), Function(name=u'min', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Min', isTemporary=True), Function(name=u'minute', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Minute', isTemporary=True), Function(name=u'mod', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Remainder', isTemporary=True), Function(name=u'monotonically_increasing_id', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MonotonicallyIncreasingID', isTemporary=True), Function(name=u'month', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Month', isTemporary=True), Function(name=u'months_between', description=None, className=u'org.apache.spark.sql.catalyst.expressions.MonthsBetween', isTemporary=True), Function(name=u'named_struct', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CreateNamedStruct', isTemporary=True), Function(name=u'nanvl', description=None, className=u'org.apache.spark.sql.catalyst.expressions.NaNvl', isTemporary=True), Function(name=u'negative', description=None, className=u'org.apache.spark.sql.catalyst.expressions.UnaryMinus', isTemporary=True), Function(name=u'next_day', description=None, className=u'org.apache.spark.sql.catalyst.expressions.NextDay', isTemporary=True), Function(name=u'not', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Not', isTemporary=True), Function(name=u'now', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CurrentTimestamp', isTemporary=True), Function(name=u'ntile', description=None, className=u'org.apache.spark.sql.catalyst.expressions.NTile', isTemporary=True), Function(name=u'nullif', description=None, className=u'org.apache.spark.sql.catalyst.expressions.NullIf', isTemporary=True), Function(name=u'nvl', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Nvl', isTemporary=True), Function(name=u'nvl2', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Nvl2', isTemporary=True), Function(name=u'octet_length', description=None, className=u'org.apache.spark.sql.catalyst.expressions.OctetLength', isTemporary=True), Function(name=u'or', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Or', isTemporary=True), Function(name=u'parse_url', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ParseUrl', isTemporary=True), Function(name=u'percent_rank', description=None, className=u'org.apache.spark.sql.catalyst.expressions.PercentRank', isTemporary=True), Function(name=u'percentile', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Percentile', isTemporary=True), Function(name=u'percentile_approx', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.ApproximatePercentile', isTemporary=True), Function(name=u'pi', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Pi', isTemporary=True), Function(name=u'pmod', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Pmod', isTemporary=True), Function(name=u'posexplode', description=None, className=u'org.apache.spark.sql.catalyst.expressions.PosExplode', isTemporary=True), Function(name=u'posexplode_outer', description=None, className=u'org.apache.spark.sql.catalyst.expressions.PosExplode', isTemporary=True), Function(name=u'position', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringLocate', isTemporary=True), Function(name=u'positive', description=None, className=u'org.apache.spark.sql.catalyst.expressions.UnaryPositive', isTemporary=True), Function(name=u'pow', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Pow', isTemporary=True), Function(name=u'power', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Pow', isTemporary=True), Function(name=u'printf', description=None, className=u'org.apache.spark.sql.catalyst.expressions.FormatString', isTemporary=True), Function(name=u'quarter', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Quarter', isTemporary=True), Function(name=u'radians', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ToRadians', isTemporary=True), Function(name=u'rand', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Rand', isTemporary=True), Function(name=u'randn', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Randn', isTemporary=True), Function(name=u'rank', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Rank', isTemporary=True), Function(name=u'reflect', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CallMethodViaReflection', isTemporary=True), Function(name=u'regexp_extract', description=None, className=u'org.apache.spark.sql.catalyst.expressions.RegExpExtract', isTemporary=True), Function(name=u'regexp_replace', description=None, className=u'org.apache.spark.sql.catalyst.expressions.RegExpReplace', isTemporary=True), Function(name=u'repeat', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringRepeat', isTemporary=True), Function(name=u'replace', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringReplace', isTemporary=True), Function(name=u'reverse', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Reverse', isTemporary=True), Function(name=u'right', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Right', isTemporary=True), Function(name=u'rint', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Rint', isTemporary=True), Function(name=u'rlike', description=None, className=u'org.apache.spark.sql.catalyst.expressions.RLike', isTemporary=True), Function(name=u'rollup', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Rollup', isTemporary=True), Function(name=u'round', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Round', isTemporary=True), Function(name=u'row_number', description=None, className=u'org.apache.spark.sql.catalyst.expressions.RowNumber', isTemporary=True), Function(name=u'rpad', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringRPad', isTemporary=True), Function(name=u'rtrim', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringTrimRight', isTemporary=True), Function(name=u'schema_of_json', description=None, className=u'org.apache.spark.sql.catalyst.expressions.SchemaOfJson', isTemporary=True), Function(name=u'second', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Second', isTemporary=True), Function(name=u'sentences', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sentences', isTemporary=True), Function(name=u'sequence', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sequence', isTemporary=True), Function(name=u'sha', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sha1', isTemporary=True), Function(name=u'sha1', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sha1', isTemporary=True), Function(name=u'sha2', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sha2', isTemporary=True), Function(name=u'shiftleft', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ShiftLeft', isTemporary=True), Function(name=u'shiftright', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ShiftRight', isTemporary=True), Function(name=u'shiftrightunsigned', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ShiftRightUnsigned', isTemporary=True), Function(name=u'shuffle', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Shuffle', isTemporary=True), Function(name=u'sign', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Signum', isTemporary=True), Function(name=u'signum', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Signum', isTemporary=True), Function(name=u'sin', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sin', isTemporary=True), Function(name=u'sinh', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sinh', isTemporary=True), Function(name=u'size', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Size', isTemporary=True), Function(name=u'skewness', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Skewness', isTemporary=True), Function(name=u'slice', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Slice', isTemporary=True), Function(name=u'smallint', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'sort_array', description=None, className=u'org.apache.spark.sql.catalyst.expressions.SortArray', isTemporary=True), Function(name=u'soundex', description=None, className=u'org.apache.spark.sql.catalyst.expressions.SoundEx', isTemporary=True), Function(name=u'space', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringSpace', isTemporary=True), Function(name=u'spark_partition_id', description=None, className=u'org.apache.spark.sql.catalyst.expressions.SparkPartitionID', isTemporary=True), Function(name=u'split', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringSplit', isTemporary=True), Function(name=u'sqrt', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Sqrt', isTemporary=True), Function(name=u'stack', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Stack', isTemporary=True), Function(name=u'std', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.StddevSamp', isTemporary=True), Function(name=u'stddev', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.StddevSamp', isTemporary=True), Function(name=u'stddev_pop', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.StddevPop', isTemporary=True), Function(name=u'stddev_samp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.StddevSamp', isTemporary=True), Function(name=u'str_to_map', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringToMap', isTemporary=True), Function(name=u'string', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'struct', description=None, className=u'org.apache.spark.sql.catalyst.expressions.NamedStruct', isTemporary=True), Function(name=u'substr', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Substring', isTemporary=True), Function(name=u'substring', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Substring', isTemporary=True), Function(name=u'substring_index', description=None, className=u'org.apache.spark.sql.catalyst.expressions.SubstringIndex', isTemporary=True), Function(name=u'sum', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.Sum', isTemporary=True), Function(name=u'tan', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Tan', isTemporary=True), Function(name=u'tanh', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Tanh', isTemporary=True), Function(name=u'timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'tinyint', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Cast', isTemporary=True), Function(name=u'to_date', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ParseToDate', isTemporary=True), Function(name=u'to_json', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StructsToJson', isTemporary=True), Function(name=u'to_timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ParseToTimestamp', isTemporary=True), Function(name=u'to_unix_timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ToUnixTimestamp', isTemporary=True), Function(name=u'to_utc_timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ToUTCTimestamp', isTemporary=True), Function(name=u'transform', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ArrayTransform', isTemporary=True), Function(name=u'translate', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringTranslate', isTemporary=True), Function(name=u'trim', description=None, className=u'org.apache.spark.sql.catalyst.expressions.StringTrim', isTemporary=True), Function(name=u'trunc', description=None, className=u'org.apache.spark.sql.catalyst.expressions.TruncDate', isTemporary=True), Function(name=u'ucase', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Upper', isTemporary=True), Function(name=u'unbase64', description=None, className=u'org.apache.spark.sql.catalyst.expressions.UnBase64', isTemporary=True), Function(name=u'unhex', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Unhex', isTemporary=True), Function(name=u'unix_timestamp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.UnixTimestamp', isTemporary=True), Function(name=u'upper', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Upper', isTemporary=True), Function(name=u'uuid', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Uuid', isTemporary=True), Function(name=u'var_pop', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.VariancePop', isTemporary=True), Function(name=u'var_samp', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.VarianceSamp', isTemporary=True), Function(name=u'variance', description=None, className=u'org.apache.spark.sql.catalyst.expressions.aggregate.VarianceSamp', isTemporary=True), Function(name=u'weekday', description=None, className=u'org.apache.spark.sql.catalyst.expressions.WeekDay', isTemporary=True), Function(name=u'weekofyear', description=None, className=u'org.apache.spark.sql.catalyst.expressions.WeekOfYear', isTemporary=True), Function(name=u'when', description=None, className=u'org.apache.spark.sql.catalyst.expressions.CaseWhen', isTemporary=True), Function(name=u'window', description=None, className=u'org.apache.spark.sql.catalyst.expressions.TimeWindow', isTemporary=True), Function(name=u'xpath', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathList', isTemporary=True), Function(name=u'xpath_boolean', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathBoolean', isTemporary=True), Function(name=u'xpath_double', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathDouble', isTemporary=True), Function(name=u'xpath_float', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathFloat', isTemporary=True), Function(name=u'xpath_int', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathInt', isTemporary=True), Function(name=u'xpath_long', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathLong', isTemporary=True), Function(name=u'xpath_number', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathDouble', isTemporary=True), Function(name=u'xpath_short', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathShort', isTemporary=True), Function(name=u'xpath_string', description=None, className=u'org.apache.spark.sql.catalyst.expressions.xml.XPathString', isTemporary=True), Function(name=u'year', description=None, className=u'org.apache.spark.sql.catalyst.expressions.Year', isTemporary=True), Function(name=u'zip_with', description=None, className=u'org.apache.spark.sql.catalyst.expressions.ZipWith', isTemporary=True), Function(name=u'|', description=None, className=u'org.apache.spark.sql.catalyst.expressions.BitwiseOr', isTemporary=True), Function(name=u'~', description=None, className=u'org.apache.spark.sql.catalyst.expressions.BitwiseNot', isTemporary=True)]
+>>> 
+>>> sparkdriver.sql("show databases").show()
++------------+
+|databaseName|
++------------+
+|     default|
+|      kalyan|
++------------+
+
+>>> 
+>>> df_rdbms.select("order_id","order_date").where("order_id>1000").filter("order_id<1010").explain(True) 
+== Parsed Logical Plan ==
+'Filter ('order_id < 1010)
++- Filter (order_id#216 > 1000)
+   +- Project [order_id#216, order_date#217]
+      +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]
+
+== Analyzed Logical Plan ==
+order_id: int, order_date: timestamp
+Filter (order_id#216 < 1010)
++- Filter (order_id#216 > 1000)
+   +- Project [order_id#216, order_date#217]
+      +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]
+
+== Optimized Logical Plan ==
+Project [order_id#216, order_date#217]
++- Filter ((isnotnull(order_id#216) && (order_id#216 > 1000)) && (order_id#216 < 1010))
+   +- Relation[order_id#216,order_date#217,order_customer_id#218,order_status#219] JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1]
+
+== Physical Plan ==
+*(1) Scan JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1] [order_id#216,order_date#217] PushedFilters: [*IsNotNull(order_id), *GreaterThan(order_id,1000), *LessThan(order_id,1010)], ReadSchema: struct<order_id:int,order_date:timestamp>
+>>> df_rdbms.select("order_id","order_date").where("order_id>1000").filter("order_id<1010").explain() 
+== Physical Plan ==
+*(1) Scan JDBCRelation((select * from kalyan.orders) SPARK_GEN_SUBQ_4) [numPartitions=1] [order_id#216,order_date#217] PushedFilters: [*IsNotNull(order_id), *GreaterThan(order_id,1000), *LessThan(order_id,1010)], ReadSchema: struct<order_id:int,order_date:timestamp>
+>>> 
+>>> 
+
+
+
+>>> df6.join(df9,df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:33:26 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:33:26 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:33:26 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|       1|2013-07-25 00:00:00|            11599|         CLOSED|
++--------+-------------------+-----------------+---------------+--------+-------------------+-----------------+---------------+
+
+>>> df6.select(df6.order_id,df6.order_status).join(df9.select(df9.order_date,df9.order_id),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:33:27 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/dataframe.py", line 1050, in join
+    jdf = self._jdf.join(other._jdf, on, how)
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/lib/py4j-0.10.7-src.zip/py4j/java_gateway.py", line 1257, in __call__
+  File "/home/spark/spark/spark-2.4.4-bin-hadoop2.7/python/pyspark/sql/utils.py", line 69, in deco
+    raise AnalysisException(s.split(': ', 1)[1], stackTrace)
+pyspark.sql.utils.AnalysisException: u'Cannot resolve column name "order_status" among (order_date, order_id);'
+>>> df6.show()
+Fri Mar 06 16:33:49 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       2|2013-07-25 00:00:00|              256|PENDING_PAYMENT|
+|       4|2013-07-25 00:00:00|             8827|         CLOSED|
+|       6|2013-07-25 00:00:00|             7130|       COMPLETE|
+|       8|2013-07-25 00:00:00|             2911|     PROCESSING|
+|      10|2013-07-25 00:00:00|             5648|PENDING_PAYMENT|
+|      12|2013-07-25 00:00:00|             1837|         CLOSED|
+|      14|2013-07-25 00:00:00|             9842|     PROCESSING|
+|      16|2013-07-25 00:00:00|             7276|PENDING_PAYMENT|
+|      18|2013-07-25 00:00:00|             1205|         CLOSED|
+|      20|2013-07-25 00:00:00|             9198|     PROCESSING|
++--------+-------------------+-----------------+---------------+
+
+>>> df9.show()
+Fri Mar 06 16:33:52 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+-------------------+-----------------+---------------+
+|order_id|         order_date|order_customer_id|   order_status|
++--------+-------------------+-----------------+---------------+
+|       1|2013-07-25 00:00:00|            11599|         CLOSED|
+|       3|2013-07-25 00:00:00|            12111|       COMPLETE|
+|       5|2013-07-25 00:00:00|            11318|       COMPLETE|
+|       7|2013-07-25 00:00:00|             4530|       COMPLETE|
+|       9|2013-07-25 00:00:00|             5657|PENDING_PAYMENT|
+|      11|2013-07-25 00:00:00|              918| PAYMENT_REVIEW|
+|      13|2013-07-25 00:00:00|             9149|PENDING_PAYMENT|
+|      15|2013-07-25 00:00:00|             2568|       COMPLETE|
+|      17|2013-07-25 00:00:00|             2667|       COMPLETE|
+|      19|2013-07-25 00:00:00|             9488|PENDING_PAYMENT|
++--------+-------------------+-----------------+---------------+
+
+>>> df6.select("order_id","order_status").join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:34:57 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:34:58 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:34:58 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+--------+---------------+
+|order_id|   order_status|order_id|   order_status|
++--------+---------------+--------+---------------+
+|       2|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|       4|         CLOSED|       1|         CLOSED|
+|       6|       COMPLETE|      17|       COMPLETE|
+|       6|       COMPLETE|      15|       COMPLETE|
+|       6|       COMPLETE|       7|       COMPLETE|
+|       6|       COMPLETE|       5|       COMPLETE|
+|       6|       COMPLETE|       3|       COMPLETE|
+|      10|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      12|         CLOSED|       1|         CLOSED|
+|      16|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      18|         CLOSED|       1|         CLOSED|
++--------+---------------+--------+---------------+
+
+>>> df6.select(df6.order_id,"order_status").join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:35:47 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:35:47 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:35:48 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+--------+---------------+
+|order_id|   order_status|order_id|   order_status|
++--------+---------------+--------+---------------+
+|       2|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|       4|         CLOSED|       1|         CLOSED|
+|       6|       COMPLETE|      17|       COMPLETE|
+|       6|       COMPLETE|      15|       COMPLETE|
+|       6|       COMPLETE|       7|       COMPLETE|
+|       6|       COMPLETE|       5|       COMPLETE|
+|       6|       COMPLETE|       3|       COMPLETE|
+|      10|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      12|         CLOSED|       1|         CLOSED|
+|      16|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      18|         CLOSED|       1|         CLOSED|
++--------+---------------+--------+---------------+
+
+>>> df6.select(df6.order_id,df6.Fri Mar 06 16:36:03 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:36:03 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+
+20/03/06 16:36:13 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:36:13 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:36:13 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+--------+---------------+
+|order_id|   order_status|order_id|   order_status|
++--------+---------------+--------+---------------+
+|       2|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|       4|         CLOSED|       1|         CLOSED|
+|       6|       COMPLETE|      17|       COMPLETE|
+|       6|       COMPLETE|      15|       COMPLETE|
+|       6|       COMPLETE|       7|       COMPLETE|
+|       6|       COMPLETE|       5|       COMPLETE|
+|       6|       COMPLETE|       3|       COMPLETE|
+|      10|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      12|         CLOSED|       1|         CLOSED|
+|      16|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      18|         CLOSED|       1|         CLOSED|
++--------+---------------+--------+---------------+
+
+>>> df6.select(df6.order_id,df6.order_status).join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'inner').show()
+20/03/06 16:36:16 WARN Column: Constructing trivially true equals predicate, 'order_status#219 = order_status#219'. Perhaps you need to use aliases.
+Fri Mar 06 16:36:16 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Mar 06 16:36:16 IST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
++--------+---------------+--------+---------------+
+|order_id|   order_status|order_id|   order_status|
++--------+---------------+--------+---------------+
+|       2|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|       2|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|       4|         CLOSED|       1|         CLOSED|
+|       6|       COMPLETE|      17|       COMPLETE|
+|       6|       COMPLETE|      15|       COMPLETE|
+|       6|       COMPLETE|       7|       COMPLETE|
+|       6|       COMPLETE|       5|       COMPLETE|
+|       6|       COMPLETE|       3|       COMPLETE|
+|      10|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      10|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      12|         CLOSED|       1|         CLOSED|
+|      16|PENDING_PAYMENT|      19|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|      13|PENDING_PAYMENT|
+|      16|PENDING_PAYMENT|       9|PENDING_PAYMENT|
+|      18|         CLOSED|       1|         CLOSED|
++--------+---------------+--------+---------------+
+
+>>> df6.select(df6.order_id,df6.order_status).join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'inner').show()df6.select(df6.order_id,df6.order_status).join(df9.select(df9.order_date,df9.order_id),df6.order_status==df9.order_status,'inner').show()
+  File "<stdin>", line 1
+    df6.select(df6.order_id,df6.order_status).join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'inner').show()df6.select(df6.order_id,df6.order_status).join(df9.select(df9.order_date,df9.order_id),df6.order_status==df9.order_status,'inner').show()
+                                                                                                                                             ^
+SyntaxError: invalid syntax
+>>> 
+
+

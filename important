@@ -17,7 +17,7 @@ def rdbms():
 	print("creation of  data frame using rdbms")
 	df=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').option('driver','com.mysql.jdbc.Driver').option('user','root').option('password','hadoop').option('dbtable','kalyan.orders').load()
 	print(df.count())
-	df.write.format('csv').option('delimiter','\t').mode('overwrite').save('hdfs://localhost:8020/hive/kalyan/ttttttt')
+	df.write.format('csv').option('delimiter','\t').save('hdfs://localhost:8020/hive/kalyan/ttttttt')
 
 
 if __name__=="__main__":

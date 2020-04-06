@@ -1,0 +1,37 @@
+import os
+import time
+import json
+import requests
+import logging 
+import readline 
+
+from pyspark.sql import SparkSession,HiveContext
+from pyspark.sql import * 
+from pyspark.sql import functions 
+from pyspark.sql.functions import udf 
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+#creatio of spark driverprocess from SparkSession
+sparkdriver=SparkSession.builder.master('local').appName('revathi').enableHiveSupport().\
+                                         config('hive.metastore.uris','thrift://localhost:9083').\
+										 config('spark.sql.warehouse.dir','hdfs://localhost:8020/hive/kalyan').\
+										 config('spark.jars.packages','mysql:mysql-connector-java:5.1.45').\
+										 getOrCreate()
+										 
+										 
+df_mysql=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').\
+                                                              option('driver','com.mysql.jdbc.Driver').\
+															  option('user','root').\
+															  option('password','hadoop').\
+															  option('query','select * from kalyan.orders limit 10000').load()
+
+
+df_mysql.show(5)
+df_mysql.printSchema()
+
+sparkdriver=SparkSession.builder.master('local').appName('de').enableHiveSupport().config('spark.jars.packages','mysql:mysql-connector-java:5.1.45').getOrCreate() 
+															  
+															  
+from pyspark.storagelevel import StorageLevel
+															  

@@ -1,0 +1,235 @@
+import os
+import logging
+import time
+import json
+
+from pyspark.sql import SparkSession,HiveContext
+from pyspark.sql import *
+from pyspark.sql import functions 
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+sparkdriver=SparkSession.builder.master('local').appName('de').enableHiveSupport().config('spark.jars.packages','mysql:mysql-connector-java:5.1.45').getOrCreate() 
+																					 
+#reading the data into dataframe from rbdms 
+df_mysql=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').\
+																	  option('driver','com.mysql.jdbc.Driver').\
+																	  option('user','root').\
+																	  option('password','hadoop').\
+																	  option('dbtable','kalyan.orders').\
+																	  load()
+df_mysql.show(5)
+df_mysql.printSchema()
+																	  
+df=df_mysql.alias("df")
+
+df_mysql.createOrReplaceTempView("orders")
+																	  
+sparkdriver.sql("show tables").show()
+sparkdriver.sql("show databases").show()
+
+sparkdriver.sql("describe formatted orders").collect()
+sparkdriver.sql("describe database extended kalyan").collect()																	  
+
+sparkdriver.sql("select order_id,order_date from orders").show()
+df.select("order_id","order_date").show()
+
+sparkdriver.sql("select order_id,order_date from orders where order_id>1000 and order_id<=1010").show()
+#df.select(df.order_id,"order_date").where("order_id">1000 and "order_id"<=1010).show()
+df.select("order_id","order_date").filter("order_id>1000").where("order_id<=1010").show()
+
+sparkdriver.sql("select order_status,count(1) from orders group by order_status").show()
+df.groupBy("order_status").count().show()
+
+sparkdriver.sql("select substr(order_status,1,1) as ch,count(1) from orders group by ch").show()
+df.groupBy(df.order_status.substr(1,1)).count().show()
+
+sparkdriver.sql("select order_status,count(1),min(order_id),max(order_id) from orders group by order_status").show()
+df.groupBy("order_status").agg(count(df.order_status),min(df.order_id),max(df.order_id)).show()
+
+sparkdriver.sql("select order_status,count(1),min(order_id),max(order_id) from orders group by order_status having count(1) >10000").show()
+#df.groupBy("order_status").agg(count(df.order_status),min(df.order_id),max(df.order_id),filter(count(order_status)>10000)).show()
+df.groupBy("order_status").agg(count(df.order_status),min(df.order_id),max(df.order_id)).filter("count(order_status)>10000").show()
+
+df1=df_mysql.alias("df1")
+df1.createGlobalTempView("sample1")
+
+sparkdriver.sql("select * from sample1").show()
+sparkdriver.sql("select * from global_temp.sample1").show(5)
+
+spark1=sparkdriver.newSession()
+
+spark1.sql("select * from global_temp.sample1").show(5) 
+
+df1=sparkdriver.sql("select * from orders where order_id%2==0")
+df2=df.where("order_id%2==1")
+
+df1.count()
+df2.count()
+df.count()
+
+#----------------------------------------------------------------------------Joins------------------------------------------------------------------
+df1.printSchema()
+df2.printSchema()
+
+df6=df1.limit(10)
+df9=df2.limit(10)
+
+df6.join(df9,df6.order_status==df9.order_status,'inner').collect()
+#df6.select(df6.order_id,df6.order_status).join(df9.select("order_id","order_date"),df6.order_status==df9.order_status,'left_outer').show()
+df6.select("order_id","order_status").join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'inner').show()
+df6.select("order_id","order_status").join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'left_outer').show()
+df6.select("order_id","order_status").join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'right_outer').show()
+df6.select("order_id","order_status").join(df9.select("order_id","order_status"),df6.order_status==df9.order_status,'full_outer').show()
+ 
+ 
+df.cube("order_id","order_date").count().show()
+df.rollup("order_date","order_status").count().show()
+
+df.cube("order_id","order_date").count().na.replace(154,100,'order_id').show()
+df.cube("order_id","order_date").count().na.replace(154,100,'order_id').show(4)
+
+df.rollup("order_status","order_id").count().na.replace("CLOSED","OK",'order_status').show() 
+
+df.orderBy(desc("order_id")).show(10)
+df.orderBy(asc("order_id")).show(10)
+df.orderBy(("order_id")).show(10)
+
+df.groupBy("order_status").count().orderBy(desc("order_status")).show()
+
+df.drop("order_id","order_date").show()
+df.dropDuplicates(['order_status']).show()
+
+df.select("order_status").distinct().show()
+
+df.selectExpr("order_id%100 as myid").show()
+
+df.withColumn("newstatus",when(df.order_status=="COMPLETE","OK").when(df.order_status=="PROCESSING","WAIT").otherwise("bad")).show()
+df.withColumn("newid",df.order_id*2).show()
+
+#if we want to change the existing column then use the existing column only 
+df.withColumn("order_status",when(df.order_status=="COMPLETE","ok").otherwise("checkonce")).show()
+df.withColumn("siva",lit(200)).show()
+#lit means literal contact value adding 
+
+df.withColumnRenamed("order_id","sivaid").show()
+
+df.write.format('csv').option('delimiter','\t').mode('overwrite').save('/home/spark/miriyala')
+df.write.format('json').mode('append').save('hdfs://localhost:8020/spark/miriyala_json')
+df.write.format('jdbc').options(url='jdbc:mysql://localhost:3306',driver='com.mysql.jdbc.Driver',user='root',password='hadoop',dbtable='kalyan.ravi').save()
+df.write.format('orc').partitionBy("order_status","order_date").option('path','hdfs://localhost:8020/spark/miriyala_orc').saveAsTable("kalyan.ravi_orc")
+
+
+df.write.format('parquet').bucketBy(100,"order_id").saveAsTable("kalyan.bucket100")
+
+sch=StructType([StructField("id",LongType()),StructField("date1",TimestampType()),StructField("cid",LongType()),StructField("status",StringType())])
+
+df_local=sparkdriver.read.format('csv').option('delimiter','\t').load('/home/spark/miriyala')
+df_local.printSchema()
+df_local=sparkdriver.read.format('csv').option('delimiter','\t').schema(sch).load('/home/spark/miriyala')
+
+
+print(df_local.rdd.getNumPartitions())
+
+rdd=sparkdriver.sparkContext.textFile('/home/spark/miriyala')
+print(rdd.getNumPartitions())
+
+#print(df_local.rdd.defaultParallelism())
+print(sparkdriver.sparkContext.defaultParallelism)
+
+
+from pyspark.sql import SparkSession,HiveContext
+from pyspark.sql import functions
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+sparkdriver=SparkSession.builder.master('local').\
+											   config('spark.jars.packages','mysql:mysql-connector-java:5.1.45').\
+											   config('hive.metastore.uris','thrift://localhost:9083').\
+											   config('spark.sql.warehouse.dir','hdfs://localhost:8020/hive/kalyan').\
+											   appName('demo').\
+											   getOrCreate()
+											   
+df_mysql=sparkdriver.read.format('jdbc').option('url','jdbc:mysql://localhost:3306').\
+																	  option('driver','com.mysql.jdbc.Driver').\
+																	  option('user','root').\
+																	  option('password','hadoop').\
+																	  option('query','select * from kalyan.orders limit 10000').load()
+df2=df_mysql.withColumn("status",with(df_mysql.order_status=="COMPLETE","OK").when(df_mysql.order_status=="CLOSED","good").otherwise("wait"))
+df2.write.saveAsTable("kalyan.rrrrrtt")	
+df2.write.format('csv').option('path','hdfs://localhost:8020/spark100').saveAsTable("kalyan.newpathtable")
+
+#Functions
+
+from pyspark.sql import functions 
+from pyspark.sql.functions import udf
+def square(x):
+    return x * x
+
+sparkdriver.udf.register("myfunc", square, LongType())
+myfunc1=udf(square, LongType())
+df_mysql.createOrReplaceTempView("sample1")
+
+sparkdriver.sql("select order_id",myfunc("order_id") from sample1").show()
+df_mysql.select("order_id",myfunc1("order_id")).show()
+
+import requsets
+import json
+
+#reading the data from restapis
+jsonapidata=requsets.requset('GET','https://api.github.com/users/hadly/repos')
+
+jsondata=jsonapidata.json()
+
+file=open('/home/spark/newfile','a')
+
+for record in jsondata:
+    file.write("%s\n" %record)
+
+
+file.close()
+
+df_local=sparkdriver.read.format('json').load('/home/spark/newfile')
+df_local.show()
+
+#if multiline is there 
+df_local2=sparkdriver.read.format('json').option('multiLine',True).load('/home/spark/json')
+df_local.show(2)
+
+rdd=sparkdriver.sparkContext.textFile('/home/spark/newfile')
+rdd.take(1)
+
+
+df_mysql2=df_mysql.withColumn("day",current_date())
+df_mysql2.write.partitionBy("day").saveAsTable("kalyan.partiontable1")
+
+df_mysql2=df_mysql.withColumn("day",date_add(current_date(),1))
+df_mysql2.write.partitionBy("day").partitionBy("day").mode(	'append').saveAsTable("kalyan.partiontable1")
+
+df_mysql3=df_mysql.withColumn("day",current_timestamp())
+df_mysql3.write.partitionBy("day").save('hdfs://localhost:8020/spark6')
+
+df_mysql3=df_mysql.withColumn("day",date_add(current_timestamp(),1))
+df_mysql3.write.partitionBy("day").mode('append').save('hdfs://localhost:8020/spark6')
+
+print(sparkdriver.sparkContext.defaultParallelism)
+print(df_mysql.rdd.getNumPartitions())
+
+rdd=sparkdriver.sparkContext.textFile('/home/spark/json')
+print(rdd.getNumPartitions())
+
+df_mysql.withColumn("order_id",col(df_mysql.order_id).cast('long')).select("order_id+1").show()
+
+#if order_id is string
+df_mysql.withColumn("id",col("order_id").cast('long')).select("order_id","id").show(5) 
+
+
+
+create table if not exists partbucket(name string,id int)
+partitioned by (course string,year int)
+clustered by (id) into 4 buckets 
+row format delimited 
+fields terminated by '\t' 
+lines terminated by '\n' 
+stored as textfile 
+;

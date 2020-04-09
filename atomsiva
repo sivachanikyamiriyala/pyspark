@@ -1,0 +1,174 @@
+import os
+import time
+import datetime
+import requests
+import json
+import logging
+import sys
+
+from pyspark.sql import SparkSession,HiveContext
+from pyspark.sql import functions
+from pyspark.sql.functions import * #udf,col,min,max
+from pyspark.sql.types import * #IntegerType,StringType
+from pyspark.storagelevel import StorageLevel
+from pyspark.sql import *
+
+#creation of sparkdriver
+sparkdriver=SparkSession.builder.config('spark.master','local[*]').\
+                         config('spark.app.name','dedp').\
+                         enableHiveSupport().getOrCreate()
+
+sparkdriver
+#printting the weburl
+print(sparkdriver.sparkContext.uiWebUrl)
+
+r1=sparkdriver.sparkContext.textFile('/home/spark/movies.dat')
+r1.getNumPartitions
+r1.take(1)
+r1.count()
+
+r1.persist(StorageLevel.MEMORY_ONLY)
+r1.count()
+
+r2=r1.map(lambda x:x.encode('utf-8'))
+r3=r2.map(lambda x:'Sabrina (1995)' in x)
+print(r3.count())
+
+print(sparkdriver.sparkContext.defaultParallelism)
+#sparkdriver=SparkSession.builder.master('local').\
+              config('spark.sql.warehouse.dir','hdfs://localhost:9870/hive/kalyan').\
+              config('hive.metastore.uris','thrift://localhost:9083').\
+              enableHiveSupport().getOrCreate()
+movies_r1=sparkdriver.sparkContext.textFile('/home/spark/movies.dat')
+movies_r2=movies_r1.map(lambda x:x.encode('utf-8'))
+movies_r3=movies_r2.map(lambda x:x.split("::"))
+
+movies_r4=movies_r3.map(lambda x:((int)(x[0]),x[1],x[2]))
+movies_df=movies_r4.toDF(["moviesid","title","geners"])
+movies_df.count()
+movies_df.persist(StorageLevel.MEMORY_ONLY)
+movies_df.count()
+movies_df.show(2)
+
+ratings_r1=sparkdriver.sparkContext.textFile('/home/spark/ratings.dat')
+ratings_r2=ratings_r1.map(lambda x:x.encode('utf-8'))
+ratings_r3=ratings_r2.map(lambda x:x.split("::"))
+ratings_r4=ratings_r3.map(lambda x:((int)(x[0]),(int)(x[1]),x[2],x[3]))
+ratings_r4.count()
+
+ratings_df=ratings_r4.toDF(["userid","moviesid","rating","timestamp"])
+ratings_df.count()
+ratings_df.show(1)
+ratings_df.persist(StorageLevel.MEMORY_AND_DISK)
+
+movies_ratings=movies_df.join(ratings_df,movies_df.moviesid==ratings_df.moviesid,'inner')
+movies_ratings.printSchema()
+movies_ratings.persist()
+movies_ratings.show(5)
+
+#to find top 10 watched movies
+
+#sol1=movies_ratings.select("movies_df.moviesid","ratings_df.userid","movies_df.title").groupBy(movies_ratings.title).agg(count("userid").alias("count")).orderBy(desc("count"))
+sol1=movies_ratings.groupBy("title").agg(count("userid").alias("cc")).orderBy(desc("cc")).limit(10)
+sol1.show()
+#sol2=movies_ratings.groupBy("title").agg(count("userid").alias("cc"),avg("rating").alias("avg")).orderBy(desc("avg")).limit(20)
+sol2=movies_ratings.groupBy("title").agg(count("userid").alias("cc"),avg("rating").alias("avg")).filter("cc>40").orderBy(desc("avg")).limit(20)
+sol2.show()
+
+sol1.write.format('csv').option('header',True).option('inferSchema',True).option('delimiter','\t').mode('overwrite').save('/home/spark/sol1')
+sol2.write.format('csv').option('header',True).option('inferSchema',True).option('delimiter','\t').mode('overwrite').save('/home/spark/sol2')
+
+#case1:
+'''
+spark##spark##spark
+spark##spark
+spark##spark'''
+#read the data as rdd because we can read as df because df doesn't allow multidelimiters
+
+r1=sparkdriver.sparkContext.textFile('/home/spark/amma')
+r2=r2.map(lambda x:x.encode('utf-8'))
+r3=r2.map(lambda x:x.split("##"))
+r4=r3.map(lambda x:len(x))
+r4.collect()
+count=r4.max()
+
+def fill(x):
+    result=[]
+    for i in range(count):
+        try:
+            result.append(x[i])
+        except:
+            result.append("nodata")
+    return result
+
+r5=r3.map(lambda x:fill(x))
+r5.collect()
+r6=r5.map(lambda x:(x[0],x[1],x[2]))
+
+df11=r6.toDF(["id1","id2","id3"])
+df11.show()
+
+'''
+spark is a data processing frame work
+spark is only used for analytical purpose'''
+
+#word count
+
+r1=sparkdriver.sparkContext.textFile('/home/spark/sparkfile')
+r1.getNumPartitions()
+r2=r1.map(lambda x:x.encode('utf-8'))
+r3=r2.flatMap(lambda x:x.split(" "))
+r4=r3.map(lambda x:(x,1))
+r5=r4.map(lambda x,y:(x+y))
+r5.collect()
+r5.mode('overwrite').saveAsTextFile('/home/spark/wordcount')
+r5.coalesec(1).saveAsTextFile('/home/spark/ii')
+
+'''cloudera
+sc
+sc._jsc.hadoopConfiguration.set('fs.s3a.access.key','')
+sc._jsc.hadoopConfiguration.set('fs.s3a.secret.key','')
+
+#reading the data from bucket
+
+df_s3=sqlContext.read.format('json').option('delimiter','\t').load('s3a://bucketname/filename')
+
+#do some actions and write back to s3bucketname
+df_df=df_s3.filter("order_status='COMPLETE'")
+df_df.write.format('json').option('delimiter','\t').save('s3a://bucketname/output')
+'''
+
+'''s3 bucke
+import boto3
+print(dir(boto3))
+
+s3client=boto3.resource('s3')
+buckets=s3client.buckets.all()
+for bucket in buckets:
+    print(bucket)
+
+bucket=s3client.Bucket('siva927')
+objects=bucket.objects.all()
+for object in objects:
+    print(object.keys)
+
+sparkdriver=SparkSession.builder.master('local').appName('deii').\
+            config('spark.jars.packages','mysql:mysql-connector-java:5.1.40').\
+            getOrCreate()
+
+movies_df.show(5)
+
+movies_df.write.format('jdbc').option('url','jdbc:mysql://localhost:3306').\
+                option('driver','com.mysql.jdbc.Driver').\
+                option('user','root').\
+                option('password','hadoop').\
+                option('dbtable','kalyan.movies').\
+                mode('overwrite').\
+                save()
+
+movies_df.write.option('path','hdfs://localhost:8020/hive/kalyan/movies1').saveAsTable("kalyan.movies")
+movies_df.write.format('csv').option('header',True).option('delimiter','\t').save('/home/spark/uuu_csv')
+
+movies_df.unpersist()
+
+sparkdriver.stop()

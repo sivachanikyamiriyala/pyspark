@@ -21,4 +21,8 @@ sparkdriver1=SparkSession.builder.\
 				   enableHiveSupport().\
 				   getOrCreate()
 				   
-#enabling hive support 				   
+#enabling hive support 
+sparkdriver=SparkSession.builder.master('local[*]').appName('demo').getOrCreate()
+
+>>> df_csv.select("id","cid").filter("id>1000 and id<1010").show()
+https://community.cloudera.com/t5/Support-Questions/Pyspark-issue-AttributeError-DataFrame-object-has-no/td-p/78093				   

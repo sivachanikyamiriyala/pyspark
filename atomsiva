@@ -172,3 +172,14 @@ movies_df.write.format('csv').option('header',True).option('delimiter','\t').sav
 movies_df.unpersist()
 
 sparkdriver.stop()
+
+
+#multidelimiter
+df_multi=sparkdriver.read.format('csv').option('multidelimiter','::').load('/home/spark/movies.dat')
+
+CREATE TABLE test (
+ id string,
+ hivearray array<binary>,
+ hivemap map<string,int>)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.MultiDelimitSerDe'
+WITH SERDEPROPERTIES ("field.delim"="[,]","collection.delim"=":","mapkey.delim"="@");
